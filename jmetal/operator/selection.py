@@ -15,7 +15,7 @@ S = TypeVar('S')
    :platform: Unix, Windows
    :synopsis: Module implementing selection operators.
 
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
@@ -26,7 +26,7 @@ class RouletteWheelSelection(Selection[List[S], S]):
     def __init__(self):
         super(RouletteWheelSelection).__init__()
 
-    def execute(self, front: List[S]) -> S:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -44,17 +44,17 @@ class RouletteWheelSelection(Selection[List[S], S]):
 
         return None
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Roulette wheel selection'
 
 
 class BinaryTournamentSelection(Selection[List[S], S]):
 
-    def __init__(self, comparator: Comparator = DominanceComparator()):
+    def __init__(self, comparator = DominanceComparator()):
         super(BinaryTournamentSelection, self).__init__()
         self.comparator = comparator
 
-    def execute(self, front: List[S]) -> S:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -79,7 +79,7 @@ class BinaryTournamentSelection(Selection[List[S], S]):
 
         return result
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Binary tournament selection'
 
 
@@ -88,7 +88,7 @@ class BestSolutionSelection(Selection[List[S], S]):
     def __init__(self):
         super(BestSolutionSelection, self).__init__()
 
-    def execute(self, front: List[S]) -> S:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -102,20 +102,20 @@ class BestSolutionSelection(Selection[List[S], S]):
 
         return result
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Best solution selection'
 
 
 class NaryRandomSolutionSelection(Selection[List[S], S]):
 
-    def __init__(self, number_of_solutions_to_be_returned: int = 1):
+    def __init__(self, number_of_solutions_to_be_returned= 1):
         super(NaryRandomSolutionSelection, self).__init__()
         if number_of_solutions_to_be_returned < 0:
             raise Exception('The number of solutions to be returned must be positive integer')
 
         self.number_of_solutions_to_be_returned = number_of_solutions_to_be_returned
 
-    def execute(self, front: List[S]) -> S:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         if len(front) == 0:
@@ -126,7 +126,7 @@ class NaryRandomSolutionSelection(Selection[List[S], S]):
         # random sampling without replacement
         return random.sample(front, self.number_of_solutions_to_be_returned)
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Nary random solution selection'
 
 
@@ -136,7 +136,7 @@ class DifferentialEvolutionSelection(Selection[List[S], List[S]]):
         super(DifferentialEvolutionSelection, self).__init__()
         self.index_to_exclude = None
 
-    def execute(self, front: List[S]) -> List[S]:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -150,10 +150,10 @@ class DifferentialEvolutionSelection(Selection[List[S], List[S]]):
 
         return [front[i] for i in selected_indexes]
 
-    def set_index_to_exclude(self, index: int):
+    def set_index_to_exclude(self, index):
         self.index_to_exclude = index
 
-    def get_name(self) -> str:
+    def get_name(self):
         return "Differential evolution selection"
 
 
@@ -162,7 +162,7 @@ class RandomSolutionSelection(Selection[List[S], S]):
     def __init__(self):
         super(RandomSolutionSelection, self).__init__()
 
-    def execute(self, front: List[S]) -> S:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -170,18 +170,18 @@ class RandomSolutionSelection(Selection[List[S], S]):
 
         return random.choice(front)
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Random solution selection'
 
 
 class RankingAndCrowdingDistanceSelection(Selection[List[S], List[S]]):
 
-    def __init__(self, max_population_size: int, dominance_comparator: Comparator = DominanceComparator()):
+    def __init__(self, max_population_size, dominance_comparator = DominanceComparator()):
         super(RankingAndCrowdingDistanceSelection, self).__init__()
         self.max_population_size = max_population_size
         self.dominance_comparator = dominance_comparator
 
-    def execute(self, front: List[S]) -> List[S]:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -207,14 +207,14 @@ class RankingAndCrowdingDistanceSelection(Selection[List[S], List[S]]):
 
         return new_solution_list
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Ranking and crowding distance selection'
 
 
 class RankingAndFitnessSelection(Selection[List[S], List[S]]):
 
     def __init__(self,
-                 max_population_size: int, reference_point: S, dominance_comparator: Comparator = DominanceComparator()):
+                 max_population_size, reference_point, dominance_comparator= DominanceComparator()):
         super(RankingAndFitnessSelection, self).__init__()
         self.max_population_size = max_population_size
         self.dominance_comparator = dominance_comparator
@@ -246,7 +246,7 @@ class RankingAndFitnessSelection(Selection[List[S], List[S]]):
 
         return h
 
-    def compute_hypervol_fitness_values(self, population: List[S], reference_point: S, k: int):
+    def compute_hypervol_fitness_values(self, population, reference_point, k):
         points = [ind.objectives for ind in population]
         bounds = reference_point.objectives
         population_size = len(points)
@@ -268,7 +268,7 @@ class RankingAndFitnessSelection(Selection[List[S], List[S]]):
 
         return population
 
-    def execute(self, front: List[S]) -> List[S]:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -296,17 +296,17 @@ class RankingAndFitnessSelection(Selection[List[S], List[S]]):
                 new_solution_list = new_solution_list + subfront
         return new_solution_list
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Ranking and fitness selection'
 
 
 class BinaryTournament2Selection(Selection[List[S], S]):
 
-    def __init__(self, comparator_list: List[Comparator]):
+    def __init__(self, comparator_list):
         super(BinaryTournament2Selection, self).__init__()
         self.comparator_list = comparator_list
 
-    def execute(self, front: List[S]) -> S:
+    def execute(self, front):
         if front is None:
             raise Exception('The front is null')
         elif len(front) == 0:
@@ -330,7 +330,7 @@ class BinaryTournament2Selection(Selection[List[S], S]):
 
         return winner
 
-    def __winner(self, front: List[S], comparator: Comparator):
+    def __winner(self, front, comparator):
         # Sampling without replacement
         i, j = random.sample(range(0, len(front)), 2)
 
@@ -348,5 +348,5 @@ class BinaryTournament2Selection(Selection[List[S], S]):
 
         return result
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Binary tournament selection (experimental)'

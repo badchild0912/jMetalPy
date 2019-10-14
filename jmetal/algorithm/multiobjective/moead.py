@@ -26,18 +26,18 @@ R = List[S]
 class MOEAD(GeneticAlgorithm):
 
     def __init__(self,
-                 problem: Problem,
-                 population_size: int,
-                 mutation: Mutation,
-                 crossover: DifferentialEvolutionCrossover,
-                 aggregative_function: AggregativeFunction,
-                 neighbourhood_selection_probability: float,
-                 max_number_of_replaced_solutions: int,
-                 neighbor_size: int,
-                 weight_files_path: str,
-                 termination_criterion: TerminationCriterion = store.default_termination_criteria,
-                 population_generator: Generator = store.default_generator,
-                 population_evaluator: Evaluator = store.default_evaluator):
+                 problem,
+                 population_size,
+                 mutation,
+                 crossover,
+                 aggregative_function,
+                 neighbourhood_selection_probability,
+                 max_number_of_replaced_solutions,
+                 neighbor_size,
+                 weight_files_path,
+                 termination_criterion = store.default_termination_criteria,
+                 population_generator = store.default_generator,
+                 population_evaluator = store.default_evaluator):
         """
         :param max_number_of_replaced_solutions: (eta in Zhang & Li paper).
         :param neighbourhood_selection_probability: Probability of mating with a solution in the neighborhood rather
@@ -67,7 +67,7 @@ class MOEAD(GeneticAlgorithm):
         self.current_subproblem = 0
         self.neighbor_type = None
 
-    def init_progress(self) -> None:
+    def init_progress(self):
         self.evaluations = self.population_size
         for solution in self.solutions:
             self.fitness_function.update(solution.objectives)
@@ -77,7 +77,7 @@ class MOEAD(GeneticAlgorithm):
         observable_data = self.get_observable_data()
         self.observable.notify_all(**observable_data)
 
-    def selection(self, population: List[S]):
+    def selection(self, population):
         self.current_subproblem = self.permutation.get_next_value()
         self.neighbor_type = self.choose_neighbor_type()
 
@@ -91,7 +91,7 @@ class MOEAD(GeneticAlgorithm):
 
         return mating_population
 
-    def reproduction(self, mating_population: List[S]) -> List[S]:
+    def reproduction(self, mating_population):
         self.crossover_operator.current_individual = self.solutions[self.current_subproblem]
 
         offspring_population = self.crossover_operator.execute(mating_population)
@@ -99,7 +99,7 @@ class MOEAD(GeneticAlgorithm):
 
         return offspring_population
 
-    def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
+    def replacement(self, population, offspring_population):
         new_solution = offspring_population[0]
 
         self.fitness_function.update(new_solution.objectives)
@@ -198,7 +198,7 @@ class MOEAD_DRA(MOEAD):
         if self.generation_counter % 30 == 0:
             self.__utility_function()
 
-    def selection(self, population: List[S]):
+    def selection(self, population):
         self.current_subproblem = self.order[self.current_order_index]
         self.current_order_index += 1
         self.frequency[self.current_subproblem] += 1
@@ -252,18 +252,18 @@ class MOEAD_DRA(MOEAD):
 
 class MOEADIEpsilon(MOEAD):
     def __init__(self,
-                 problem: Problem,
-                 population_size: int,
-                 mutation: Mutation,
-                 crossover: DifferentialEvolutionCrossover,
-                 aggregative_function: AggregativeFunction,
-                 neighbourhood_selection_probability: float,
-                 max_number_of_replaced_solutions: int,
-                 neighbor_size: int,
-                 weight_files_path: str,
-                 termination_criterion: TerminationCriterion = StoppingByEvaluations(300000),
-                 population_generator: Generator = store.default_generator,
-                 population_evaluator: Evaluator = store.default_evaluator):
+                 problem,
+                 population_size,
+                 mutation,
+                 crossover,
+                 aggregative_function,
+                 neighbourhood_selection_probability,
+                 max_number_of_replaced_solutions,
+                 neighbor_size,
+                 weight_files_path,
+                 termination_criterion = StoppingByEvaluations(300000),
+                 population_generator = store.default_generator,
+                 population_evaluator = store.default_evaluator):
         """
         :param max_number_of_replaced_solutions: (eta in Zhang & Li paper).
         :param neighbourhood_selection_probability: Probability of mating with a solution in the neighborhood rather
@@ -293,7 +293,7 @@ class MOEADIEpsilon(MOEAD):
         self.generation_counter = 0
         self.archive = []
 
-    def init_progress(self) -> None:
+    def init_progress(self):
         super().init_progress()
 
         # for i in range(self.population_size):
@@ -310,7 +310,7 @@ class MOEADIEpsilon(MOEAD):
         self.rk = feasibility_ratio(self.solutions)
         self.epsilon_k = self.epsilon_zero
 
-    def update_progress(self) -> None:
+    def update_progress(self):
         super().update_progress()
 
         if self.evaluations % self.population_size == 0:
@@ -392,7 +392,7 @@ class MOEADIEpsilon(MOEAD):
 
 class Permutation:
 
-    def __init__(self, length: int):
+    def __init__(self, length):
         self.counter = 0
         self.length = length
         self.permutation = np.random.permutation(length)

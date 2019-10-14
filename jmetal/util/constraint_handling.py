@@ -1,7 +1,7 @@
 from jmetal.core.solution import Solution
 
 
-def is_feasible(solution: Solution) -> bool:
+def is_feasible(solution):
     """
     Returns a boolean value concerning the feasibility of a solution
     :param solution:
@@ -10,7 +10,7 @@ def is_feasible(solution: Solution) -> bool:
     return number_of_violated_constraints(solution) == 0
 
 
-def number_of_violated_constraints(solution: Solution) -> int:
+def number_of_violated_constraints(solution):
     """
     Returns the number of violated constraints of a solution
     :param solution:
@@ -19,7 +19,7 @@ def number_of_violated_constraints(solution: Solution) -> int:
     return sum([1 for _ in solution.constraints if _ < 0])
 
 
-def overall_constraint_violation_degree(solution: Solution) -> float:
+def overall_constraint_violation_degree(solution):
     """
     Returns the constraint violation degree of a solution, which is the sum of the constraint values that are not zero
     :param solution:
@@ -28,7 +28,7 @@ def overall_constraint_violation_degree(solution: Solution) -> float:
     return sum([value for value in solution.constraints if value < 0])
 
 
-def feasibility_ratio(solutions: [Solution]):
+def feasibility_ratio(solutions):
     """
     Returns the percentage of feasible solutions in a solution list
     :param solutions:

@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import TypeVar, Generic, List
 
 S = TypeVar('S')
@@ -9,24 +9,25 @@ R = TypeVar('R')
    :platform: Unix, Windows
    :synopsis: Templates for operators.
 
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
-class Operator(Generic[S, R], ABC):
+class Operator(Generic[S, R]):
     """ Class representing operator """
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def execute(self, source: S) -> R:
+    def execute(self, source):
         pass
 
     @abstractmethod
-    def get_name(self) -> str:
+    def get_name(self):
         pass
 
 
 def check_valid_probability_value(func):
-    def func_wrapper(self, probability: float):
+    def func_wrapper(self, probability):
         if probability > 1.0:
             raise Exception('The probability is greater than one: {}'.format(probability))
         elif probability < 0.0:
@@ -37,32 +38,35 @@ def check_valid_probability_value(func):
     return func_wrapper
 
 
-class Mutation(Operator[S, S], ABC):
+class Mutation(Operator[S, S]):
     """ Class representing mutation operator. """
+    __metaclass__ = ABCMeta
 
     @check_valid_probability_value
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         self.probability = probability
 
 
-class Crossover(Operator[List[S], List[R]], ABC):
+class Crossover(Operator[List[S], List[R]]):
     """ Class representing crossover operator. """
+    __metaclass__ = ABCMeta
 
     @check_valid_probability_value
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         self.probability = probability
 
     @abstractmethod
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         pass
 
     @abstractmethod
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         pass
 
 
-class Selection(Operator[S, R], ABC):
+class Selection(Operator[S, R]):
     """ Class representing selection operator. """
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         pass

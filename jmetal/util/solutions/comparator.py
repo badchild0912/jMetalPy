@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import TypeVar, Generic
 
 import math
@@ -8,16 +8,17 @@ from jmetal.util.constraint_handling import overall_constraint_violation_degree
 S = TypeVar('S')
 
 
-class Comparator(Generic[S], ABC):
+class Comparator(Generic[S]):
+    __metaclass__= ABCMeta
 
     @abstractmethod
-    def compare(self, solution1: S, solution2: S) -> int:
+    def compare(self, solution1, solution2):
         pass
 
 
 class EqualSolutionsComparator(Comparator):
 
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         if solution1 is None:
             return 1
         elif solution2 is None:
@@ -52,11 +53,11 @@ class EqualSolutionsComparator(Comparator):
 
 class SolutionAttributeComparator(Comparator):
 
-    def __init__(self, key: str, lowest_is_best: bool = True):
+    def __init__(self, key, lowest_is_best = True):
         self.key = key
         self.lowest_is_best = lowest_is_best
 
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         value1 = solution1.attributes.get(self.key)
         value2 = solution2.attributes.get(self.key)
 
@@ -86,10 +87,10 @@ class MultiComparator(Comparator):
     value != 0 is obtained or the list becomes empty
     """
 
-    def __init__(self, comparator_list:[Comparator]):
-        self.comparator_list:[Comparator] = comparator_list
+    def __init__(self, comparator_list):
+        self.comparator_list = comparator_list
 
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         for comparator in self.comparator_list:
             flag = comparator.compare(solution1, solution2)
             if flag != 0:
@@ -100,7 +101,7 @@ class MultiComparator(Comparator):
 
 class RankingAndCrowdingDistanceComparator(Comparator):
 
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         result = \
             SolutionAttributeComparator("dominance_ranking").compare(solution1, solution2)
 
@@ -113,7 +114,7 @@ class RankingAndCrowdingDistanceComparator(Comparator):
 
 class StrengthAndKNNDistanceComparator(Comparator):
 
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         result = \
             SolutionAttributeComparator('dominance_ranking').compare(solution1, solution2)
 
@@ -125,7 +126,7 @@ class StrengthAndKNNDistanceComparator(Comparator):
 
 
 class OverallConstraintViolationComparator(Comparator):
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         violation_degree_solution_1 = overall_constraint_violation_degree(solution1)
         violation_degree_solution_2 = overall_constraint_violation_degree(solution2)
         if violation_degree_solution_1 < 0 and violation_degree_solution_2 < 0:
@@ -150,7 +151,7 @@ class DominanceComparator(Comparator):
     def __init__(self, constraint_comparator=OverallConstraintViolationComparator()):
         self.constraint_comparator = constraint_comparator
 
-    def compare(self, solution1: Solution, solution2: Solution) -> int:
+    def compare(self, solution1, solution2):
         if solution1 is None:
             raise Exception("The solution1 is None")
         elif solution2 is None:
@@ -162,7 +163,7 @@ class DominanceComparator(Comparator):
 
         return result
 
-    def __dominance_test(self, solution1: Solution, solution2: Solution) -> float:
+    def __dominance_test(self, solution1, solution2):
         best_is_one = 0
         best_is_two = 0
 
@@ -188,12 +189,12 @@ class DominanceComparator(Comparator):
 class GDominanceComparator(DominanceComparator):
 
     def __init__(self,
-                 reference_point: (),
+                 reference_point,
                  constraint_comparator=SolutionAttributeComparator('overall_constraint_violation', False)):
         super(GDominanceComparator, self).__init__(constraint_comparator)
         self.reference_point = reference_point
 
-    def compare(self, solution1: Solution, solution2: Solution):
+    def compare(self, solution1, solution2):
         if self.__flag(solution1) > self.__flag(solution2):
             result = -1
         elif self.__flag(solution1) < self.__flag(solution2):
@@ -203,7 +204,7 @@ class GDominanceComparator(DominanceComparator):
 
         return result
 
-    def __flag(self, solution: Solution):
+    def __flag(self, solution):
         result = 1
         for i in range(solution.number_of_objectives):
             if solution.objectives[i] > self.reference_point[i]:
@@ -221,19 +222,19 @@ class GDominanceComparator(DominanceComparator):
 class EpsilonDominanceComparator(DominanceComparator):
 
     def __init__(self,
-                 epsilon: float,
+                 epsilon,
                  constraint_comparator=SolutionAttributeComparator('overall_constraint_violation', False)):
         super(EpsilonDominanceComparator, self).__init__(constraint_comparator)
         self.epsilon = epsilon
 
-    def compare(self, solution1: Solution, solution2: Solution):
+    def compare(self, solution1, solution2):
         result = self.constraint_comparator.compare(solution1, solution2)
         if result == 0:
             result = self.__dominance_test(solution1, solution2)
 
         return result
 
-    def __dominance_test(self, solution1: Solution, solution2: Solution):
+    def __dominance_test(self, solution1, solution2):
         best_is_one = False
         best_is_two = False
         for i in range(solution1.number_of_objectives):

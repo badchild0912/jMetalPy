@@ -19,11 +19,11 @@ class DefaultObservable(Observable):
     def __init__(self):
         self.observers = []
 
-    def register(self, observer: Observer):
+    def register(self, observer):
         if observer not in self.observers:
             self.observers.append(observer)
 
-    def deregister(self, observer: Observer):
+    def deregister(self, observer):
         if observer in self.observers:
             self.observers.remove(observer)
 
@@ -37,7 +37,7 @@ class DefaultObservable(Observable):
 
 
 class TimeCounter(threading.Thread):
-    def __init__(self, delay: int, observable: Observable = DefaultObservable()):
+    def __init__(self, delay, observable = DefaultObservable()):
         super(TimeCounter, self).__init__()
         self.observable = observable
         self.delay = delay

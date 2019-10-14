@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
 from jmetal.util.point import IdealPoint
 
@@ -7,36 +7,37 @@ from jmetal.util.point import IdealPoint
    :platform: Unix, Windows
    :synopsis: Implementation of aggregative (scalarizing) functions.
 
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
-class AggregativeFunction(ABC):
+class AggregativeFunction():
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def compute(self, vector: [], weight_vector: []) -> float:
+    def compute(self, vector, weight_vector):
         pass
 
     @abstractmethod
-    def update(self, vector: []) -> None:
+    def update(self, vector):
         pass
 
 
 class WeightedSum(AggregativeFunction):
 
-    def compute(self, vector: [], weight_vector: []) -> float:
+    def compute(self, vector, weight_vector):
         return sum(map(lambda x, y: x * y, vector, weight_vector))
 
-    def update(self, vector: []) -> None:
+    def update(self, vector):
         pass
 
 
 class Tschebycheff(AggregativeFunction):
 
-    def __init__(self, dimension: int):
+    def __init__(self, dimension):
         self.ideal_point = IdealPoint(dimension)
 
-    def compute(self, vector: [], weight_vector: []) -> float:
+    def compute(self, vector, weight_vector):
         max_fun = -1.0e+30
 
         for i in range(len(vector)):
@@ -52,5 +53,5 @@ class Tschebycheff(AggregativeFunction):
 
         return max_fun
 
-    def update(self, vector: []) -> None:
+    def update(self, vector):
         self.ideal_point.update(vector)

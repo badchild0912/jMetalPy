@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABCMeta
 
 """
 .. module:: Observable
@@ -9,7 +9,8 @@ from abc import abstractmethod, ABC
 """
 
 
-class Observer(ABC):
+class Observer():
+    __metaclass__ = ABCMeta
 
     @abstractmethod
     def update(self, *args, **kwargs):
@@ -18,7 +19,8 @@ class Observer(ABC):
         pass
 
 
-class Observable(ABC):
+class Observable():
+    __metaclass__ = ABCMeta
 
     @abstractmethod
     def register(self, observer):

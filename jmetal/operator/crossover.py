@@ -10,7 +10,7 @@ from jmetal.core.solution import Solution, FloatSolution, BinarySolution, Permut
    :platform: Unix, Windows
    :synopsis: Module implementing crossover operators.
 
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
@@ -19,16 +19,16 @@ class NullCrossover(Crossover[Solution, Solution]):
     def __init__(self):
         super(NullCrossover, self).__init__(probability=0.0)
 
-    def execute(self, parents: List[Solution]) -> List[Solution]:
+    def execute(self, parents):
         if len(parents) != 2:
             raise Exception('The number of parents is not two: {}'.format(len(parents)))
 
         return parents
 
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         return 2
 
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         return 2
 
     def get_name(self):
@@ -37,10 +37,10 @@ class NullCrossover(Crossover[Solution, Solution]):
 
 class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         super(PMXCrossover, self).__init__(probability=probability)
 
-    def execute(self, parents: List[PermutationSolution]) -> List[PermutationSolution]:
+    def execute(self, parents):
         if len(parents) != 2:
             raise Exception('The number of parents is not two: {}'.format(len(parents)))
 
@@ -85,10 +85,10 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
         return offspring
 
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         return 2
 
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         return 2
 
     def get_name(self):
@@ -97,10 +97,10 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
 class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         super(CXCrossover, self).__init__(probability=probability)
 
-    def execute(self, parents: List[PermutationSolution]) -> List[PermutationSolution]:
+    def execute(self, parents):
         if len(parents) != 2:
             raise Exception('The number of parents is not two: {}'.format(len(parents)))
 
@@ -127,10 +127,10 @@ class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
         return offspring
 
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         return 2
 
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         return 2
 
     def get_name(self):
@@ -140,11 +140,11 @@ class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 class SBXCrossover(Crossover[FloatSolution, FloatSolution]):
     __EPS = 1.0e-14
 
-    def __init__(self, probability: float, distribution_index: float = 20.0):
+    def __init__(self, probability, distribution_index= 20.0):
         super(SBXCrossover, self).__init__(probability=probability)
         self.distribution_index = distribution_index
 
-    def execute(self, parents: List[FloatSolution]) -> List[FloatSolution]:
+    def execute(self, parents):
         if len(parents) != 2:
             raise Exception('The number of parents is not two: {}'.format(len(parents)))
 
@@ -207,22 +207,22 @@ class SBXCrossover(Crossover[FloatSolution, FloatSolution]):
                     offspring[1].variables[i] = value_x2
         return offspring
 
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         return 2
 
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         return 2
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'SBX crossover'
 
 
 class SPXCrossover(Crossover[BinarySolution, BinarySolution]):
 
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         super(SPXCrossover, self).__init__(probability=probability)
 
-    def execute(self, parents: List[BinarySolution]) -> List[BinarySolution]:
+    def execute(self, parents):
         if len(parents) != 2:
             raise Exception('The number of parents is not two: {}'.format(len(parents)))
 
@@ -266,13 +266,13 @@ class SPXCrossover(Crossover[BinarySolution, BinarySolution]):
 
         return offspring
 
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         return 2
 
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         return 2
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Single point crossover'
 
 
@@ -283,15 +283,15 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
     external to the crossover operator.
     """
 
-    def __init__(self, CR: float, F: float, K: float):
+    def __init__(self, CR, F, K):
         super(DifferentialEvolutionCrossover, self).__init__(probability=1.0)
         self.CR = CR
         self.F = F
         self.K = K
 
-        self.current_individual: FloatSolution = None
+        self.current_individual= None
 
-    def execute(self, parents: List[FloatSolution]) -> List[FloatSolution]:
+    def execute(self, parents):
         """ Execute the differential evolution crossover ('best/1/bin' variant in jMetal).
         """
         if len(parents) != self.get_number_of_parents():
@@ -317,11 +317,11 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
 
         return [child]
 
-    def get_number_of_parents(self) -> int:
+    def get_number_of_parents(self):
         return 3
 
-    def get_number_of_children(self) -> int:
+    def get_number_of_children(self):
         return 1
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Differential Evolution crossover'

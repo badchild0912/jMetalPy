@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import TypeVar, List
 
 from jmetal.util.solutions.comparator import DominanceComparator, Comparator, SolutionAttributeComparator
@@ -6,7 +6,8 @@ from jmetal.util.solutions.comparator import DominanceComparator, Comparator, So
 S = TypeVar('S')
 
 
-class Ranking(List[S], ABC):
+class Ranking(List[S]):
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         super(Ranking, self).__init__()
@@ -14,13 +15,13 @@ class Ranking(List[S], ABC):
         self.ranked_sublists = []
 
     @abstractmethod
-    def compute_ranking(self, solutions: List[S], k: int = None):
+    def compute_ranking(self, solutions, k= None):
         pass
 
     def get_nondominated(self):
         return self.ranked_sublists[0]
 
-    def get_subfront(self, rank: int):
+    def get_subfront(self, rank):
         if rank >= len(self.ranked_sublists):
             raise Exception('Invalid rank: {0}. Max rank: {1}'.format(rank, len(self.ranked_sublists) - 1))
         return self.ranked_sublists[rank]
@@ -29,18 +30,18 @@ class Ranking(List[S], ABC):
         return len(self.ranked_sublists)
 
     @classmethod
-    def get_comparator(cls) -> Comparator:
+    def get_comparator(cls):
         pass
 
 
 class FastNonDominatedRanking(Ranking[List[S]]):
     """ Class implementing the non-dominated ranking of NSGA-II proposed by Deb et al., see [Deb2002]_ """
 
-    def __init__(self, comparator: Comparator = DominanceComparator()):
+    def __init__(self, comparator= DominanceComparator()):
         super(FastNonDominatedRanking, self).__init__()
         self.comparator = comparator
 
-    def compute_ranking(self, solutions: List[S], k: int = None):
+    def compute_ranking(self, solutions, k = None):
         """ Compute ranking of solutions.
 
         :param solutions: Solution list.
@@ -101,26 +102,26 @@ class FastNonDominatedRanking(Ranking[List[S]]):
         return self.ranked_sublists
 
     @classmethod
-    def get_comparator(cls) -> Comparator:
+    def get_comparator(cls):
         return SolutionAttributeComparator('dominance_ranking')
 
 
 class StrengthRanking(Ranking[List[S]]):
     """ Class implementing a ranking scheme based on the strength ranking used in SPEA2. """
 
-    def __init__(self, comparator: Comparator = DominanceComparator()):
+    def __init__(self, comparator= DominanceComparator()):
         super(StrengthRanking, self).__init__()
         self.comparator = comparator
 
-    def compute_ranking(self, solutions: List[S], k: int = None):
+    def compute_ranking(self, solutions, k = None):
         """
         Compute ranking of solutions.
 
         :param solutions: Solution list.
         :param k: Number of individuals.
         """
-        strength: [int] = [0 for _ in range(len(solutions))]
-        raw_fitness: [int] = [0 for _ in range(len(solutions))]
+        strength = [0 for _ in range(len(solutions))]
+        raw_fitness = [0 for _ in range(len(solutions))]
 
         # strength(i) = | {j | j < - SolutionSet and i dominate j} |
         for i in range(len(solutions)):
@@ -135,7 +136,7 @@ class StrengthRanking(Ranking[List[S]]):
                 if self.comparator.compare(solutions[i], solutions[j]) == 1:
                     raw_fitness[i] += strength[j]
 
-        max_fitness_value: int = 0
+        max_fitness_value= 0
         for i in range(len(solutions)):
             solutions[i].attributes['strength_ranking'] = raw_fitness[i]
             if raw_fitness[i] > max_fitness_value:
@@ -159,5 +160,5 @@ class StrengthRanking(Ranking[List[S]]):
         return self.ranked_sublists
 
     @classmethod
-    def get_comparator(cls) -> Comparator:
+    def get_comparator(cls):
         return SolutionAttributeComparator('strength_ranking')

@@ -8,8 +8,7 @@ from jmetal.core.solution import FloatSolution
 .. module:: LZ09
    :platform: Unix, Windows
    :synopsis: LZ09 problem family of multi-objective problems.
-
-.. moduleauthor:: Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor::Antonio BenItez-Hidalgo <antonio.b@uma.es>
 """
 
 
@@ -18,12 +17,12 @@ class LZ09(FloatProblem):
     __metaclass__ = ABCMeta
 
     def __init__(self,
-                 number_of_variables: int,
-                 number_of_objectives: int,
-                 number_of_constraints: int,
-                 ptype: int,
-                 dtype: int,
-                 ltype: int):
+                 number_of_variables,
+                 number_of_objectives,
+                 number_of_constraints,
+                 ptype,
+                 dtype,
+                 ltype):
         """ LZ09 benchmark family as defined in:
 
         * H. Li and Q. Zhang. Multiobjective optimization problems with complicated pareto sets, MOEA/D and NSGA-II.
@@ -44,7 +43,7 @@ class LZ09(FloatProblem):
         self.dtype = dtype
         self.ltype = ltype
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         x = solution.variables
         y = self.objective(x)
 
@@ -53,7 +52,7 @@ class LZ09(FloatProblem):
 
         return solution
 
-    def __ps_func2(self, x: float, t1: float, dim: int, type: int, css: int) -> float:
+    def __ps_func2(self, x, t1, dim, type, css):
         """ Control the PS shapes of 2-D instances.
 
         :param type: The type of the curve.
@@ -107,7 +106,7 @@ class LZ09(FloatProblem):
 
         return beta
 
-    def __ps_func3(self, x: float, t1: float, t2: float, dim: int, type: int):
+    def __ps_func3(self, x, t1, t2, dim, type):
         """ Control the PS shapes of 3-D instances.
         :param type: The type of curve.
         """
@@ -125,7 +124,7 @@ class LZ09(FloatProblem):
 
         return beta
 
-    def __alpha_func(self, x: list, dim: int, type: int) -> list:
+    def __alpha_func(self, x, dim, type):
         """ Control the PF shape.
         """
         alpha = [0.0] * dim
@@ -163,7 +162,7 @@ class LZ09(FloatProblem):
 
         return alpha
 
-    def __beta_func(self, x: list, type: int) -> float:
+    def __beta_func(self, x, type):
         """ Control the distance.
         """
         beta = 0.0
@@ -195,7 +194,7 @@ class LZ09(FloatProblem):
 
         return beta
 
-    def objective(self, x_variables: list) -> list:
+    def objective(self, x_variables):
         aa = []
         bb = []
         cc = []

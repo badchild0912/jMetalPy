@@ -1,6 +1,6 @@
 import logging
 import random
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import Generic, TypeVar, List
 
 from jmetal.core.observer import Observer
@@ -11,31 +11,32 @@ LOGGER = logging.getLogger('jmetal')
 S = TypeVar('S')
 
 
-class Problem(Generic[S], ABC):
+class Problem(Generic[S]):
     """ Class representing problems. """
+    __metaclass__ = ABCMeta
 
     MINIMIZE = -1
     MAXIMIZE = 1
 
     def __init__(self):
-        self.number_of_variables: int = 0
-        self.number_of_objectives: int = 0
-        self.number_of_constraints: int = 0
+        self.number_of_variables= 0
+        self.number_of_objectives = 0
+        self.number_of_constraints = 0
 
-        self.reference_front: List[S] = None
+        self.reference_front= None
 
-        self.directions: List[int] = []
-        self.labels: List[str] = []
+        self.directions = []
+        self.labels = []
 
     @abstractmethod
-    def create_solution(self) -> S:
+    def create_solution(self):
         """ Creates a random solution to the problem.
 
         :return: Solution. """
         pass
 
     @abstractmethod
-    def evaluate(self, solution: S) -> S:
+    def evaluate(self, solution):
         """ Evaluate a solution. For any new problem inheriting from :class:`Problem`, this method should be
         replaced. Note that this framework ASSUMES minimization, thus solutions must be evaluated in consequence.
 
@@ -43,40 +44,43 @@ class Problem(Generic[S], ABC):
         pass
 
     @abstractmethod
-    def get_name(self) -> str:
+    def get_name(self):
         pass
 
 
-class DynamicProblem(Problem[S], Observer, ABC):
+class DynamicProblem(Problem[S], Observer):
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def the_problem_has_changed(self) -> bool:
+    def the_problem_has_changed(self):
         pass
 
     @abstractmethod
-    def clear_changed(self) -> None:
+    def clear_changed(self):
         pass
 
 
-class BinaryProblem(Problem[BinarySolution], ABC):
+class BinaryProblem(Problem[BinarySolution]):
     """ Class representing binary problems. """
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         super(BinaryProblem, self).__init__()
 
-    def create_solution(self) -> BinarySolution:
+    def create_solution(self):
         pass
 
 
-class FloatProblem(Problem[FloatSolution], ABC):
+class FloatProblem(Problem[FloatSolution]):
     """ Class representing float problems. """
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         super(FloatProblem, self).__init__()
         self.lower_bound = []
         self.upper_bound = []
 
-    def create_solution(self) -> FloatSolution:
+    def create_solution(self):
         new_solution = FloatSolution(
             self.lower_bound,
             self.upper_bound,
@@ -88,15 +92,16 @@ class FloatProblem(Problem[FloatSolution], ABC):
         return new_solution
 
 
-class IntegerProblem(Problem[IntegerSolution], ABC):
+class IntegerProblem(Problem[IntegerSolution]):
     """ Class representing integer problems. """
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         super(IntegerProblem, self).__init__()
         self.lower_bound = None
         self.upper_bound = None
 
-    def create_solution(self) -> IntegerSolution:
+    def create_solution(self):
         new_solution = IntegerSolution(
             self.lower_bound,
             self.upper_bound,
@@ -109,13 +114,14 @@ class IntegerProblem(Problem[IntegerSolution], ABC):
         return new_solution
 
 
-class PermutationProblem(Problem[PermutationSolution], ABC):
+class PermutationProblem(Problem[PermutationSolution]):
     """ Class representing permutation problems. """
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         super(PermutationProblem, self).__init__()
 
-    def create_solution(self) -> IntegerSolution:
+    def create_solution(self):
         pass
 
 
@@ -176,12 +182,12 @@ class OnTheFlyFloatProblem(FloatProblem):
 
         return self
 
-    def evaluate(self, solution: FloatSolution):
+    def evaluate(self, solution):
         for i in range(self.number_of_objectives):
             solution.objectives[i] = self.functions[i](solution.variables)
 
         for i in range(self.number_of_constraints):
             solution.constraints[i] = self.constraints[i](solution.variables)
 
-    def get_name(self) -> str:
+    def get_name(self):
         return self.name

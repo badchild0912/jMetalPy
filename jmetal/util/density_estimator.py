@@ -1,6 +1,6 @@
 import logging
 import numpy
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import TypeVar, List
 from functools import cmp_to_key
 
@@ -21,27 +21,28 @@ S = TypeVar('S')
 """
 
 
-class DensityEstimator(List[S], ABC):
+class DensityEstimator(List[S]):
     """This is the interface of any density estimator algorithm.
     """
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def compute_density_estimator(self, solution_list: List[S]) -> float:
+    def compute_density_estimator(self, solution_list):
         pass
 
     @abstractmethod
-    def sort(self, solution_list: List[S]) -> List[S]:
+    def sort(self, solution_list):
         pass
 
     @classmethod
-    def get_comparator(cls) -> Comparator:
+    def get_comparator(cls):
         pass
 
 
 class CrowdingDistance(DensityEstimator[List[S]]):
     """This class implements a DensityEstimator based on the crowding distance of algorithm NSGA-II.
     """
-    def compute_density_estimator(self, front: List[S]):
+    def compute_density_estimator(self, front):
         """This function performs the computation of the crowding density estimation over the solution list.
 
         .. note::
@@ -88,11 +89,11 @@ class CrowdingDistance(DensityEstimator[List[S]]):
                 distance += front[j].attributes['crowding_distance']
                 front[j].attributes['crowding_distance'] = distance
 
-    def sort(self, solutions:List[S]) -> List[S]:
+    def sort(self, solutions):
         solutions.sort(key=cmp_to_key(self.get_comparator().compare))
 
     @classmethod
-    def get_comparator(cls) -> Comparator:
+    def get_comparator(cls):
         return SolutionAttributeComparator("crowding_distance", lowest_is_best=False)
 
 
@@ -104,7 +105,7 @@ class KNearestNeighborDensityEstimator(DensityEstimator[List[S]]):
         self.k = k
         self.distance_matrix = []
 
-    def compute_density_estimator(self, solutions: List[S]):
+    def compute_density_estimator(self, solutions):
         solutions_size = len(solutions)
         if solutions_size <= self.k:
             return
@@ -127,7 +128,7 @@ class KNearestNeighborDensityEstimator(DensityEstimator[List[S]]):
             distances.sort()
             solutions[i].attributes['knn_density'] = distances[self.k]
 
-    def sort(self, solutions:List[S]) -> List[S]:
+    def sort(self, solutions):
         def compare(solution1, solution2):
             distances1 = solution1.attributes["distances_"]
             distances2 = solution2.attributes["distances_"]
@@ -156,5 +157,5 @@ class KNearestNeighborDensityEstimator(DensityEstimator[List[S]]):
         solutions.sort(key=cmp_to_key(compare))
 
     @classmethod
-    def get_comparator(cls) -> Comparator:
+    def get_comparator(cls):
         return SolutionAttributeComparator("knn_density", lowest_is_best=False)

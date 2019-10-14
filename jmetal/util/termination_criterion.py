@@ -1,5 +1,5 @@
 import threading
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
 from jmetal.core.observer import Observer
 from jmetal.core.quality_indicator import QualityIndicator
@@ -9,11 +9,12 @@ from jmetal.core.quality_indicator import QualityIndicator
    :platform: Unix, Windows
    :synopsis: Implementation of stopping conditions.
 
-.. moduleauthor:: Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
-class TerminationCriterion(Observer, ABC):
+class TerminationCriterion(Observer):
+    __metaclass__ = ABCMeta
 
     @abstractmethod
     def update(self, *args, **kwargs):
@@ -27,7 +28,7 @@ class TerminationCriterion(Observer, ABC):
 
 class StoppingByEvaluations(TerminationCriterion):
 
-    def __init__(self, max: int):
+    def __init__(self, max):
         super(StoppingByEvaluations, self).__init__()
         self.max_evaluations = max
         self.evaluations = 0
@@ -42,7 +43,7 @@ class StoppingByEvaluations(TerminationCriterion):
 
 class StoppingByTime(TerminationCriterion):
 
-    def __init__(self, max_seconds: int):
+    def __init__(self, max_seconds):
         super(StoppingByTime, self).__init__()
         self.max_seconds = max_seconds
         self.seconds = 0.0
@@ -78,7 +79,7 @@ class StoppingByKeyboard(TerminationCriterion):
 
 class StoppingByQualityIndicator(TerminationCriterion):
 
-    def __init__(self, quality_indicator: QualityIndicator, expected_value: float, degree: float):
+    def __init__(self, quality_indicator, expected_value, degree):
         super(StoppingByQualityIndicator, self).__init__()
         self.quality_indicator = quality_indicator
         self.expected_value = expected_value

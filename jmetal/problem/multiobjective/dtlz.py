@@ -18,7 +18,7 @@ class DTLZ1(FloatProblem):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 7 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 7, number_of_objectives=3):
+    def __init__(self, number_of_variables = 7, number_of_objectives=3):
         """ :param number_of_variables: number of decision variables of the problem.
         """
         super(DTLZ1, self).__init__()
@@ -32,7 +32,7 @@ class DTLZ1(FloatProblem):
         self.lower_bound = self.number_of_variables * [0.0]
         self.upper_bound = self.number_of_variables * [1.0]
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         k = self.number_of_variables - self.number_of_objectives + 1
 
         g = sum([(x - 0.5) * (x - 0.5) - cos(20.0 * pi * (x - 0.5))
@@ -61,12 +61,12 @@ class DTLZ2(DTLZ1):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 12 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 12, number_of_objectives=3):
+    def __init__(self, number_of_variables = 12, number_of_objectives=3):
         """:param number_of_variables: number of decision variables of the problem
         """
         super(DTLZ2, self).__init__(number_of_variables, number_of_objectives)
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         k = self.number_of_variables - self.number_of_objectives + 1
 
         g = sum([(x - 0.5) * (x - 0.5) for x in solution.variables[self.number_of_variables - k:]])
@@ -92,12 +92,12 @@ class DTLZ3(DTLZ1):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 12 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 12, number_of_objectives=3):
+    def __init__(self, number_of_variables, number_of_objectives=3):
         """:param number_of_variables: number of decision variables of the problem
         """
         super(DTLZ3, self).__init__(number_of_variables, number_of_objectives)
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         k = self.number_of_variables - self.number_of_objectives + 1
 
         g = sum([(x - 0.5) ** 2 - cos(20.0 * pi * (x - 0.5)) for x in solution.variables[self.number_of_variables - k:]])
@@ -127,12 +127,12 @@ class DTLZ4(DTLZ1):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 12 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 12, number_of_objectives=3):
+    def __init__(self, number_of_variables = 12, number_of_objectives=3):
         """:param number_of_variables: number of decision variables of the problem
         """
         super(DTLZ4, self).__init__(number_of_variables, number_of_objectives)
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         alpha = 100.0
         k = self.number_of_variables - self.number_of_objectives + 1
 
@@ -161,12 +161,12 @@ class DTLZ5(DTLZ1):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 12 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 12, number_of_objectives=3):
+    def __init__(self, number_of_variables = 12, number_of_objectives=3):
         """:param number_of_variables: number of decision variables of the problem
         """
         super(DTLZ5, self).__init__(number_of_variables, number_of_objectives)
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         k = self.number_of_variables - self.number_of_objectives + 1
 
         g = sum([(x - 0.5) ** 2 for x in solution.variables[self.number_of_variables - k:]])
@@ -200,12 +200,12 @@ class DTLZ6(DTLZ1):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 12 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 12, number_of_objectives=3):
+    def __init__(self, number_of_variables = 12, number_of_objectives=3):
         """:param number_of_variables: number of decision variables of the problem
         """
         super(DTLZ6, self).__init__(number_of_variables, number_of_objectives)
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         k = self.number_of_variables - self.number_of_objectives + 1
 
         g = sum([pow(x, 0.1) for x in solution.variables[self.number_of_variables - k:]])
@@ -239,12 +239,12 @@ class DTLZ7(DTLZ1):
     .. note:: Unconstrained problem. The default number of variables and objectives are, respectively, 22 and 3.
     """
 
-    def __init__(self, number_of_variables: int = 22, number_of_objectives=3):
+    def __init__(self, number_of_variables = 22, number_of_objectives=3):
         """:param number_of_variables: number of decision variables of the problem
         """
         super(DTLZ7, self).__init__(number_of_variables, number_of_objectives)
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         k = self.number_of_variables - self.number_of_objectives + 1
 
         g = sum([x for x in solution.variables[self.number_of_variables - k:]])

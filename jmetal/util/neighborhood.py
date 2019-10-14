@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from pathlib import Path
 from typing import TypeVar, Generic, List
 
@@ -19,20 +19,22 @@ from jmetal.util.ckecking import Check
 S = TypeVar('S')
 
 
-class Neighborhood(Generic[S], ABC):
+class Neighborhood(Generic[S]):
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_neighbors(self, index: int, solution_list: List[S]) -> List[S]:
+    def get_neighbors(self, index, solution_list):
         pass
 
 
-class WeightNeighborhood(Neighborhood[Solution], ABC):
+class WeightNeighborhood(Neighborhood[Solution]):
+    __metaclass__ = ABCMeta
 
     def __init__(self,
-                 number_of_weight_vectors: int,
-                 neighborhood_size: int,
-                 weight_vector_size: int = 2,
-                 weights_path: str = None):
+                 number_of_weight_vectors,
+                 neighborhood_size,
+                 weight_vector_size = 2,
+                 weights_path = None):
         self.number_of_weight_vectors = number_of_weight_vectors
         self.neighborhood_size = neighborhood_size
         self.weight_vector_size = weight_vector_size
@@ -45,16 +47,16 @@ class WeightNeighborhood(Neighborhood[Solution], ABC):
 class WeightVectorNeighborhood(WeightNeighborhood):
 
     def __init__(self,
-                 number_of_weight_vectors: int,
-                 neighborhood_size: int,
-                 weight_vector_size: int = 2,
-                 weights_path: str = None):
+                 number_of_weight_vectors,
+                 neighborhood_size,
+                 weight_vector_size = 2,
+                 weights_path = None):
         super(WeightVectorNeighborhood, self).__init__(number_of_weight_vectors, neighborhood_size, weight_vector_size,
                                                        weights_path)
         self.__initialize_uniform_weight(weight_vector_size, number_of_weight_vectors)
         self.__initialize_neighborhood()
 
-    def __initialize_uniform_weight(self, weight_vector_size: int, number_of_weight_vectors: int) -> None:
+    def __initialize_uniform_weight(self, weight_vector_size, number_of_weight_vectors):
         """ Precomputed weights from
 
         * Zhang, Multiobjective Optimization Problems With Complicated Pareto Sets, MOEA/D and NSGA-II
@@ -80,7 +82,7 @@ class WeightVectorNeighborhood(WeightNeighborhood):
             else:
                 raise FileNotFoundError('Failed to initialize weights: {} not found'.format(file_path))
 
-    def __initialize_neighborhood(self) -> None:
+    def __initialize_neighborhood(self):
         distance = numpy.zeros((len(self.weight_vectors), len(self.weight_vectors)))
 
         for i in range(len(self.weight_vectors)):
@@ -90,7 +92,7 @@ class WeightVectorNeighborhood(WeightNeighborhood):
             indexes = numpy.argsort(distance[i, :])
             self.neighborhood[i, :] = indexes[0:self.neighborhood_size]
 
-    def get_neighbors(self, index: int, solution_list: List[Solution]) -> List[Solution]:
+    def get_neighbors(self, index, solution_list):
         neighbors_indexes = self.neighborhood[index]
 
         if any(i > len(solution_list) for i in neighbors_indexes):
@@ -107,7 +109,7 @@ class TwoDimensionalMesh(Neighborhood):
     Class defining a bi-mensional mesh.
     """
 
-    def __init__(self, rows: int, columns: int, neighborhood: [[]]):
+    def __init__(self, rows, columns, neighborhood):
         self.rows = rows
         self.columns = columns
         self.neighborhood = neighborhood
@@ -132,7 +134,7 @@ class TwoDimensionalMesh(Neighborhood):
                 self.mesh[i][j] = next_value
                 next_value += 1
 
-    def __get_row(self, index: int) -> int:
+    def __get_row(self, index):
         """
         Returns the row in the mesh where the index is local
         :param index:
@@ -140,7 +142,7 @@ class TwoDimensionalMesh(Neighborhood):
         """
         return index // self.columns
 
-    def __get_column(self, index: int) -> int:
+    def __get_column(self, index):
         """
         Returns the column in the mesh where the index is local
         :param index:
@@ -148,7 +150,7 @@ class TwoDimensionalMesh(Neighborhood):
         """
         return index % self.columns
 
-    def __get_neighbor(self, index: int, neighbor: []) -> int:
+    def __get_neighbor(self, index, neighbor):
         """
         Returns the neighbor of the index
         :param index:
@@ -169,7 +171,7 @@ class TwoDimensionalMesh(Neighborhood):
 
         return self.mesh[r][c]
 
-    def __find_neighbors(self, solution_list: [], solution_index: int, neighborhood: [[]]):
+    def __find_neighbors(self, solution_list, solution_index, neighborhood):
         """
         Returns a list containing the neighbors of a given solution belongin to a solution list
         :param solution_list:
@@ -185,7 +187,7 @@ class TwoDimensionalMesh(Neighborhood):
 
         return neighbors
 
-    def get_neighbors(self, index: int, solution_list: List[Solution]) -> List[Solution]:
+    def get_neighbors(self, index, solution_list):
         Check.is_not_null(solution_list)
         Check.that(len(solution_list) != 0, "The list of solutions is empty")
 
@@ -213,7 +215,7 @@ class C9(TwoDimensionalMesh):
             south_west = { 1 ,-1}
     """
 
-    def __init__(self, rows: int, columns: int):
+    def __init__(self, rows, columns):
         super(C9, self).__init__(rows, columns, [[-1, 0], [1, 0], [0, 1], [0, -1], [-1, 1], [-1, -1], [1, 1], [1, -1]])
 
 
@@ -232,5 +234,5 @@ class L5(TwoDimensionalMesh):
         west  =  0, -1
     """
 
-    def __init__(self, rows: int, columns: int):
+    def __init__(self, rows, columns):
         super(L5, self).__init__(rows, columns, [[-1, 0], [1, 0], [0, 1], [0, -1]])

@@ -8,7 +8,7 @@ from jmetal.core.solution import BinarySolution, Solution, FloatSolution, Intege
    :platform: Unix, Windows
    :synopsis: Module implementing mutation operators.
 
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
@@ -17,7 +17,7 @@ class NullMutation(Mutation[Solution]):
     def __init__(self):
         super(NullMutation, self).__init__(probability=0)
 
-    def execute(self, solution: Solution) -> Solution:
+    def execute(self, solution):
         return solution
 
     def get_name(self):
@@ -26,10 +26,10 @@ class NullMutation(Mutation[Solution]):
 
 class BitFlipMutation(Mutation[BinarySolution]):
 
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         super(BitFlipMutation, self).__init__(probability=probability)
 
-    def execute(self, solution: BinarySolution) -> BinarySolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             for j in range(len(solution.variables[i])):
                 rand = random.random()
@@ -44,11 +44,11 @@ class BitFlipMutation(Mutation[BinarySolution]):
 
 class PolynomialMutation(Mutation[FloatSolution]):
 
-    def __init__(self, probability: float, distribution_index: float = 0.20):
+    def __init__(self, probability, distribution_index = 0.20):
         super(PolynomialMutation, self).__init__(probability=probability)
         self.distribution_index = distribution_index
 
-    def execute(self, solution: FloatSolution) -> FloatSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             rand = random.random()
 
@@ -88,11 +88,11 @@ class PolynomialMutation(Mutation[FloatSolution]):
 
 class IntegerPolynomialMutation(Mutation[IntegerSolution]):
 
-    def __init__(self, probability: float, distribution_index: float = 0.20):
+    def __init__(self, probability, distribution_index = 0.20):
         super(IntegerPolynomialMutation, self).__init__(probability=probability)
         self.distribution_index = distribution_index
 
-    def execute(self, solution: IntegerSolution) -> IntegerSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             if random.random() <= self.probability:
                 y = solution.variables[i]
@@ -129,10 +129,10 @@ class IntegerPolynomialMutation(Mutation[IntegerSolution]):
 
 class SimpleRandomMutation(Mutation[FloatSolution]):
 
-    def __init__(self, probability: float):
+    def __init__(self, probability):
         super(SimpleRandomMutation, self).__init__(probability=probability)
 
-    def execute(self, solution: FloatSolution) -> FloatSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             rand = random.random()
             if rand <= self.probability:
@@ -146,11 +146,11 @@ class SimpleRandomMutation(Mutation[FloatSolution]):
 
 class UniformMutation(Mutation[FloatSolution]):
 
-    def __init__(self, probability: float, perturbation: float = 0.5):
+    def __init__(self, probability, perturbation = 0.5):
         super(UniformMutation, self).__init__(probability=probability)
         self.perturbation = perturbation
 
-    def execute(self, solution: FloatSolution) -> FloatSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             rand = random.random()
 
@@ -173,13 +173,13 @@ class UniformMutation(Mutation[FloatSolution]):
 
 class NonUniformMutation(Mutation[FloatSolution]):
 
-    def __init__(self, probability: float, perturbation: float = 0.5, max_iterations: int = 0.5):
+    def __init__(self, probability, perturbation = 0.5, max_iterations = 0.5):
         super(NonUniformMutation, self).__init__(probability=probability)
         self.perturbation = perturbation
         self.max_iterations = max_iterations
         self.current_iteration = 0
 
-    def execute(self, solution: FloatSolution) -> FloatSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             if random.random() <= self.probability:
                 rand = random.random()
@@ -200,10 +200,10 @@ class NonUniformMutation(Mutation[FloatSolution]):
 
         return solution
 
-    def set_current_iteration(self, current_iteration:int):
+    def set_current_iteration(self, current_iteration):
         self.current_iteration = current_iteration
 
-    def __delta(self, y:float, b_mutation_parameter:float):
+    def __delta(self, y, b_mutation_parameter):
         return (y * (1.0 - pow(random.random(),
                 pow((1.0 - 1.0 * self.current_iteration/self.max_iterations), b_mutation_parameter))))
 
@@ -213,7 +213,7 @@ class NonUniformMutation(Mutation[FloatSolution]):
 
 class SwapMutation(Mutation[PermutationSolution]):
 
-    def execute(self, solution: PermutationSolution) -> PermutationSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             for _ in range(len(solution.variables[i])):
                 rand = random.random()
@@ -231,7 +231,7 @@ class SwapMutation(Mutation[PermutationSolution]):
 
 class ScrambleMutation(Mutation[PermutationSolution]):
 
-    def execute(self, solution: PermutationSolution) -> PermutationSolution:
+    def execute(self, solution):
         for i in range(solution.number_of_variables):
             rand = random.random()
 

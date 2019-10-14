@@ -1,7 +1,7 @@
 import logging
 import threading
 import time
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABCMeta
 from typing import TypeVar, Generic, List
 
 from jmetal.config import store
@@ -18,16 +18,17 @@ R = TypeVar('R')
    :platform: Unix, Windows
    :synopsis: Templates for algorithms.
 
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
-class Algorithm(Generic[S, R], threading.Thread, ABC):
+class Algorithm(Generic[S, R], threading.Thread):
+    __metaclass__ = ABCMeta
 
     def __init__(self):
         threading.Thread.__init__(self)
 
-        self.solutions: List[S] = []
+        self.solutions = []
         self.evaluations = 0
         self.start_computing_time = 0
         self.total_computing_time = 0
@@ -35,37 +36,37 @@ class Algorithm(Generic[S, R], threading.Thread, ABC):
         self.observable = store.default_observable
 
     @abstractmethod
-    def create_initial_solutions(self) -> List[S]:
+    def create_initial_solutions(self):
         """ Creates the initial list of solutions of a metaheuristic. """
         pass
 
     @abstractmethod
-    def evaluate(self, solution_list: List[S]) -> List[S]:
+    def evaluate(self, solution_list):
         """ Evaluates a solution list. """
         pass
 
     @abstractmethod
-    def init_progress(self) -> None:
+    def init_progress(self):
         """ Initialize the algorithm. """
         pass
 
     @abstractmethod
-    def stopping_condition_is_met(self) -> bool:
+    def stopping_condition_is_met(self):
         """ The stopping condition is met or not. """
         pass
 
     @abstractmethod
-    def step(self) -> None:
+    def step(self):
         """ Performs one iteration/step of the algorithm's loop. """
         pass
 
     @abstractmethod
-    def update_progress(self) -> None:
+    def update_progress(self):
         """ Update the progress after each iteration. """
         pass
 
     @abstractmethod
-    def get_observable_data(self) -> dict:
+    def get_observable_data(self):
         """ Get observable data, with the information that will be send to all observers each time. """
         pass
 
@@ -87,54 +88,56 @@ class Algorithm(Generic[S, R], threading.Thread, ABC):
         self.total_computing_time = time.time() - self.start_computing_time
 
     @abstractmethod
-    def get_result(self) -> R:
+    def get_result(self):
         pass
 
     @abstractmethod
-    def get_name(self) -> str:
+    def get_name(self):
         pass
 
 
-class DynamicAlgorithm(Algorithm[S, R], ABC):
+class DynamicAlgorithm(Algorithm[S, R]):
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def restart(self) -> None:
+    def restart(self):
         pass
 
 
-class EvolutionaryAlgorithm(Algorithm[S, R], ABC):
+class EvolutionaryAlgorithm(Algorithm[S, R]):
+    __metaclass__ = ABCMeta
 
     def __init__(self,
-                 problem: Problem[S],
-                 population_size: int,
-                 offspring_population_size: int):
+                 problem,
+                 population_size,
+                 offspring_population_size):
         super(EvolutionaryAlgorithm, self).__init__()
         self.problem = problem
         self.population_size = population_size
         self.offspring_population_size = offspring_population_size
 
     @abstractmethod
-    def selection(self, population: List[S]) -> List[S]:
+    def selection(self, population):
         """ Select the best-fit individuals for reproduction (parents). """
         pass
 
     @abstractmethod
-    def reproduction(self, population: List[S]) -> List[S]:
+    def reproduction(self, population):
         """ Breed new individuals through crossover and mutation operations to give birth to offspring. """
         pass
 
     @abstractmethod
-    def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
+    def replacement(self, population, offspring_population):
         """ Replace least-fit population with new individuals. """
         pass
 
-    def get_observable_data(self) -> dict:
+    def get_observable_data(self):
         return {'PROBLEM': self.problem,
                 'EVALUATIONS': self.evaluations,
                 'SOLUTIONS': self.get_result(),
                 'COMPUTING_TIME': time.time() - self.start_computing_time}
 
-    def init_progress(self) -> None:
+    def init_progress(self):
         self.evaluations = self.population_size
 
         observable_data = self.get_observable_data()
@@ -147,65 +150,66 @@ class EvolutionaryAlgorithm(Algorithm[S, R], ABC):
 
         self.solutions = self.replacement(self.solutions, offspring_population)
 
-    def update_progress(self) -> None:
+    def update_progress(self):
         self.evaluations += self.offspring_population_size
 
         observable_data = self.get_observable_data()
         self.observable.notify_all(**observable_data)
 
     @property
-    def label(self) -> str:
-        return f'{self.get_name()}.{self.problem.get_name()}'
+    def label(self):
+        return '{self.get_name()}.{self.problem.get_name()}'
 
 
-class ParticleSwarmOptimization(Algorithm[FloatSolution, List[FloatSolution]], ABC):
+class ParticleSwarmOptimization(Algorithm[FloatSolution, List[FloatSolution]]):
+    __metaclass__ = ABCMeta
 
     def __init__(self,
-                 problem: Problem[S],
-                 swarm_size: int):
+                 problem,
+                 swarm_size):
         super(ParticleSwarmOptimization, self).__init__()
         self.problem = problem
         self.swarm_size = swarm_size
 
     @abstractmethod
-    def initialize_velocity(self, swarm: List[FloatSolution]) -> None:
+    def initialize_velocity(self, swarm):
         pass
 
     @abstractmethod
-    def initialize_particle_best(self, swarm: List[FloatSolution]) -> None:
+    def initialize_particle_best(self, swarm):
         pass
 
     @abstractmethod
-    def initialize_global_best(self, swarm: List[FloatSolution]) -> None:
+    def initialize_global_best(self, swarm):
         pass
 
     @abstractmethod
-    def update_velocity(self, swarm: List[FloatSolution]) -> None:
+    def update_velocity(self, swarm):
         pass
 
     @abstractmethod
-    def update_particle_best(self, swarm: List[FloatSolution]) -> None:
+    def update_particle_best(self, swarm):
         pass
 
     @abstractmethod
-    def update_global_best(self, swarm: List[FloatSolution]) -> None:
+    def update_global_best(self, swarm):
         pass
 
     @abstractmethod
-    def update_position(self, swarm: List[FloatSolution]) -> None:
+    def update_position(self, swarm):
         pass
 
     @abstractmethod
-    def perturbation(self, swarm: List[FloatSolution]) -> None:
+    def perturbation(self, swarm):
         pass
 
-    def get_observable_data(self) -> dict:
+    def get_observable_data(self):
         return {'PROBLEM': self.problem,
                 'EVALUATIONS': self.evaluations,
                 'SOLUTIONS': self.get_result(),
                 'COMPUTING_TIME': time.time() - self.start_computing_time}
 
-    def init_progress(self) -> None:
+    def init_progress(self):
         self.evaluations = self.swarm_size
 
         self.initialize_velocity(self.solutions)
@@ -223,12 +227,12 @@ class ParticleSwarmOptimization(Algorithm[FloatSolution, List[FloatSolution]], A
         self.update_global_best(self.solutions)
         self.update_particle_best(self.solutions)
 
-    def update_progress(self) -> None:
+    def update_progress(self):
         self.evaluations += self.swarm_size
 
         observable_data = self.get_observable_data()
         self.observable.notify_all(**observable_data)
 
     @property
-    def label(self) -> str:
-        return f'{self.get_name()}.{self.problem.get_name()}'
+    def label(self):
+        return '{self.get_name()}.{self.problem.get_name()}'

@@ -6,7 +6,7 @@ from statsmodels.stats.libqsturng import qsturng
 from jmetal.lab.statistical_test.functions import ranks
 
 
-def NemenyiCD(alpha: float, num_alg, num_dataset):
+def NemenyiCD(alpha, num_alg, num_dataset):
     """ Computes Nemenyi's critical difference:
     * CD = q_alpha * sqrt(num_alg*(num_alg + 1)/(6*num_prob))
     where q_alpha is the critical value, of the Studentized range statistic divided by sqrt(2).
@@ -24,7 +24,7 @@ def NemenyiCD(alpha: float, num_alg, num_dataset):
     return cd
 
 
-def CDplot(results, alpha: float = 0.05, higher_is_better: bool=False, alg_names: list = None, output_filename: str = 'cdplot.eps'):
+def CDplot(results, alpha = 0.05, higher_is_better=False, alg_names = None, output_filename = 'cdplot.eps'):
     """ CDgraph plots the critical difference graph show in Janez Demsar's 2006 work:
     * Statistical Comparisons of Classifiers over Multiple Data Sets.
     :param results: A 2-D array containing results from each algorithm. Each row of 'results' represents an algorithm, and each column a dataset.

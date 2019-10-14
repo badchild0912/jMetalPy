@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import TypeVar, List
 
 import numpy as np
@@ -11,30 +11,31 @@ S = TypeVar('S')
    :platform: Unix, Windows
    :synopsis: Quality indicators implementation.
 
-.. moduleauthor:: Antonio Benítez-Hidalgo <antonio.b@uma.es>, Simon Wessing
+.. moduleauthor:: Antonio Benitez-Hidalgo <antonio.b@uma.es>, Simon Wessing
 """
 
 
-class QualityIndicator(ABC):
+class QualityIndicator():
+    __metaclass__ = ABCMeta
 
-    def __init__(self, is_minimization: bool):
+    def __init__(self, is_minimization):
         self.is_minimization = is_minimization
 
     @abstractmethod
-    def compute(self, solutions: List[S]):
+    def compute(self, solutions):
         pass
 
     @abstractmethod
-    def get_name(self) -> str:
+    def get_name(self):
         pass
 
 
 class FitnessValue(QualityIndicator):
 
-    def __init__(self, is_minimization: bool = True):
+    def __init__(self, is_minimization = True):
         super(FitnessValue, self).__init__(is_minimization=is_minimization)
 
-    def compute(self, solutions: List[S]):
+    def compute(self, solutions):
         if self.is_minimization:
             mean = np.mean([s.objectives for s in solutions])
         else:
@@ -42,13 +43,13 @@ class FitnessValue(QualityIndicator):
 
         return mean
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Fitness'
 
 
 class GenerationalDistance(QualityIndicator):
 
-    def __init__(self, reference_front: List[S] = None, p: float = 2.0):
+    def __init__(self, reference_front = None, p = 2.0):
         """
         * Van Veldhuizen, D.A., Lamont, G.B.: Multiobjective Evolutionary Algorithm Research: A History and Analysis.
           Technical Report TR-98-03, Dept. Elec. Comput. Eng., Air Force. Inst. Technol. (1998)
@@ -57,7 +58,7 @@ class GenerationalDistance(QualityIndicator):
         self.reference_front = reference_front
         self.p = p
 
-    def compute(self, solutions: List[S]):
+    def compute(self, solutions):
         if not self.reference_front:
             raise Exception('Reference front is none')
 
@@ -68,18 +69,18 @@ class GenerationalDistance(QualityIndicator):
 
         return np.mean(np.min(distances, axis=1))
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'GD'
 
 
 class InvertedGenerationalDistance(QualityIndicator):
 
-    def __init__(self, reference_front: List[S] = None, p: float = 2.0):
+    def __init__(self, reference_front = None, p = 2.0):
         super(InvertedGenerationalDistance, self).__init__(is_minimization=True)
         self.reference_front = reference_front
         self.p = p
 
-    def compute(self, solutions: List[S]):
+    def compute(self, solutions):
         if not self.reference_front:
             raise Exception('Reference front is none')
 
@@ -90,13 +91,13 @@ class InvertedGenerationalDistance(QualityIndicator):
 
         return np.mean(np.min(distances, axis=1))
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'IGD'
 
 
 class EpsilonIndicator(QualityIndicator):
 
-    def __init__(self, reference_front: List[S] = None):
+    def __init__(self, reference_front = None):
         """ Epsilon indicator in the paper:
 
         * Zitzler, E. Thiele, L. Laummanns, M., Fonseca, C., and Grunert da Fonseca. V (2003): Performance Assessment of Multiobjective Optimizers: An Analysis and Review.
@@ -104,7 +105,7 @@ class EpsilonIndicator(QualityIndicator):
         super(EpsilonIndicator, self).__init__(is_minimization=True)
         self.reference_front = reference_front
 
-    def compute(self, solutions: List[S]):
+    def compute(self, solutions):
         if not self.reference_front:
             raise Exception('Reference front is none')
 
@@ -112,7 +113,7 @@ class EpsilonIndicator(QualityIndicator):
             [max([s2.objectives[k] - s1.objectives[k] for k in range(s2.number_of_objectives)]) for s2 in
              solutions]) for s1 in self.reference_front])
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'EP'
 
 
@@ -126,12 +127,12 @@ class HyperVolume(QualityIndicator):
     Minimization is implicitly assumed here!
     """
 
-    def __init__(self, reference_point: List[float]):
+    def __init__(self, reference_point):
         super(HyperVolume, self).__init__(is_minimization=False)
         self.referencePoint = reference_point
-        self.list: MultiList = []
+        self.list = []
 
-    def compute(self, solutions: List[S]):
+    def compute(self, solutions):
         """Before the HV computation, front and reference point are translated, so that the reference point is [0, ..., 0].
 
         :return: The hypervolume that is dominated by a non-dominated front.
@@ -162,7 +163,7 @@ class HyperVolume(QualityIndicator):
 
         return self._hv_recursive(dimensions - 1, len(relevant_points), bounds)
 
-    def _hv_recursive(self, dim_index: int, length: int, bounds: list):
+    def _hv_recursive(self, dim_index, length, bounds):
         """Recursive call to hypervolume calculation.
 
         In contrast to the paper, the code assumes that the reference point
@@ -260,7 +261,7 @@ class HyperVolume(QualityIndicator):
         # write back to original list
         nodes[:] = [node for (_, node) in decorated]
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'HV'
 
 

@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
 """
 .. module:: point
@@ -9,19 +9,20 @@ from abc import ABC, abstractmethod
 """
 
 
-class Point(ABC):
+class Point():
+    __metaclass__ = ABCMeta
 
     @abstractmethod
-    def update(self, vector: []) -> None:
+    def update(self, vector):
         pass
 
 
 class IdealPoint(Point):
 
-    def __init__(self, dimension: int):
+    def __init__(self, dimension):
         self.point = dimension * [float("inf")]
 
-    def update(self, vector: []) -> None:
+    def update(self, vector):
         self.point = [y if x > y else x for x, y in zip(self.point, vector)]
 
 

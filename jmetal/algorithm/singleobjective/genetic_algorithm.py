@@ -15,22 +15,22 @@ R = TypeVar('R')
 .. module:: genetic_algorithm
    :platform: Unix, Windows
    :synopsis: Implementation of Genetic Algorithms.
-.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
 class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
 
     def __init__(self,
-                 problem: Problem,
-                 population_size: int,
-                 offspring_population_size: int,
-                 mutation: Mutation,
-                 crossover: Crossover,
-                 selection: Selection,
-                 termination_criterion: TerminationCriterion = store.default_termination_criteria,
-                 population_generator: Generator = store.default_generator,
-                 population_evaluator: Evaluator = store.default_evaluator):
+                 problem,
+                 population_size,
+                 offspring_population_size,
+                 mutation,
+                 crossover,
+                 selection,
+                 termination_criterion = store.default_termination_criteria,
+                 population_generator = store.default_generator,
+                 population_evaluator = store.default_evaluator):
         super(GeneticAlgorithm, self).__init__(
             problem=problem,
             population_size=population_size,
@@ -52,17 +52,17 @@ class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
         if self.mating_pool_size < self.crossover_operator.get_number_of_children():
             self.mating_pool_size = self.crossover_operator.get_number_of_children()
 
-    def create_initial_solutions(self) -> List[S]:
+    def create_initial_solutions(self):
         return [self.population_generator.new(self.problem)
                 for _ in range(self.population_size)]
 
-    def evaluate(self, population: List[S]):
+    def evaluate(self, population):
         return self.population_evaluator.evaluate(population, self.problem)
 
-    def stopping_condition_is_met(self) -> bool:
+    def stopping_condition_is_met(self):
         return self.termination_criterion.is_met
 
-    def selection(self, population: List[S]):
+    def selection(self, population):
         mating_population = []
 
         for i in range(self.mating_pool_size):
@@ -71,7 +71,7 @@ class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
 
         return mating_population
 
-    def reproduction(self, mating_population: List[S]) -> List[S]:
+    def reproduction(self, mating_population):
         number_of_parents_to_combine = self.crossover_operator.get_number_of_parents()
 
         if len(mating_population) % number_of_parents_to_combine != 0:
@@ -93,15 +93,15 @@ class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
 
         return offspring_population
 
-    def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
+    def replacement(self, population, offspring_population):
         population.extend(offspring_population)
 
         population.sort(key=lambda s: s.objectives[0])
 
         return population[:self.population_size]
 
-    def get_result(self) -> R:
+    def get_result(self):
         return self.solutions[0]
 
-    def get_name(self) -> str:
+    def get_name(self):
         return 'Genetic algorithm'

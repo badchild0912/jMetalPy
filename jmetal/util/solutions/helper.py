@@ -12,11 +12,11 @@ LOGGER = logging.getLogger('jmetal')
    :platform: Unix, Windows
    :synopsis: Utils to print solutions.
 
-.. moduleauthor:: Antonio J. Nebro <ajnebro@uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
+.. moduleauthor:: Antonio J. Nebro <ajnebro@uma.es>, Antonio Benitez-Hidalgo <antonio.b@uma.es>
 """
 
 
-def read_solutions(filename: str) -> List[FloatSolution]:
+def read_solutions(filename):
     """ Reads a reference front from a file.
 
     :param filename: File path where the front is located.
@@ -38,7 +38,7 @@ def read_solutions(filename: str) -> List[FloatSolution]:
     return front
 
 
-def print_variables_to_file(solutions, filename: str):
+def print_variables_to_file(solutions, filename):
     LOGGER.info('Output file (variables): ' + filename)
 
     try:
@@ -64,7 +64,7 @@ def print_variables_to_screen(solutions):
         print(solution.variables[0])
 
 
-def print_function_values_to_file(solutions, filename: str):
+def print_function_values_to_file(solutions, filename):
     LOGGER.info('Output file (function values): ' + filename)
 
     try:
@@ -87,6 +87,8 @@ def print_function_values_to_screen(solutions):
         solutions = [solutions]
 
     for solution in solutions:
-        print(str(solutions.index(solution)) + ": ", sep='  ', end='', flush=True)
-        print(solution.objectives, sep='  ', end='', flush=True)
+        print(str(solutions.index(solution)))
+        #print(str(solutions.index(solution)) + ": ", sep= '  ', end='', flush=True)
+        print(solution.objectives)
+        #print(solution.objectives, sep='  ', end='', flush=True)
         print()

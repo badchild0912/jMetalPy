@@ -27,7 +27,7 @@ class Srinivas(FloatProblem):
         self.lower_bound = [-20.0 for _ in range(self.number_of_variables)]
         self.upper_bound = [20.0 for _ in range(self.number_of_variables)]
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         x1 = solution.variables[0]
         x2 = solution.variables[1]
 
@@ -38,7 +38,7 @@ class Srinivas(FloatProblem):
 
         return solution
 
-    def __evaluate_constraints(self, solution: FloatSolution) -> None:
+    def __evaluate_constraints(self, solution):
         x1 = solution.variables[0]
         x2 = solution.variables[1]
 
@@ -65,7 +65,7 @@ class Tanaka(FloatProblem):
         self.upper_bound = [pi for _ in range(self.number_of_variables)]
 
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         solution.objectives[0] = solution.variables[0]
         solution.objectives[1] = solution.variables[1]
 
@@ -73,7 +73,7 @@ class Tanaka(FloatProblem):
 
         return solution
 
-    def __evaluate_constraints(self, solution: FloatSolution) -> None:
+    def __evaluate_constraints(self, solution):
         constraints = [0.0 for _ in range(self.number_of_constraints)]
 
         x1 = solution.variables[0]
@@ -109,7 +109,7 @@ class Osyczka2(FloatProblem):
         FloatSolution.lower_bound = self.lower_bound
         FloatSolution.upper_bound = self.upper_bound
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         x = solution.variables
         solution.objectives[0] = - (25.0 *
                                     (x[0] - 2.0) ** 2 +
@@ -124,7 +124,7 @@ class Osyczka2(FloatProblem):
 
         return solution
 
-    def __evaluate_constraints(self, solution: FloatSolution) -> None:
+    def __evaluate_constraints(self, solution):
         constraints = [0.0 for _ in range(self.number_of_constraints)]
 
         x = solution.variables
@@ -159,7 +159,7 @@ class Binh2(FloatProblem):
         FloatSolution.lower_bound = self.lower_bound
         FloatSolution.upper_bound = self.upper_bound
 
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+    def evaluate(self, solution):
         x = solution.variables
         solution.objectives[0] = 4.0 * x[0] * x[0] + 4 * x[1] * x[1]
         solution.objectives[1] = (x[0] - 5.0) * (x[0] - 5.0) + (x[1] - 5.0) * (x[1] - 5.0)
@@ -168,7 +168,7 @@ class Binh2(FloatProblem):
 
         return solution
 
-    def __evaluate_constraints(self, solution: FloatSolution) -> None:
+    def __evaluate_constraints(self, solution):
         constraints = [0.0 for _ in range(self.number_of_constraints)]
 
         x = solution.variables
